@@ -8,6 +8,8 @@ This project is a fork of [Atlassian's Apache Connector for Crowd](https://bitbu
 
 * [Mathias Burger's Apache 2.4 compatibility patch](https://bitbucket.org/atlassian/cwdapache/pull-request/18/added-apache-24-compatibility-and-fixed/diff) has been applied.
 * I have written the necessary files to allow for packaging of this for Debian-based distributions. This has currently only been successfully tested against Ubuntu 14.04 (trusty).
+* CentOS 7 build PR from @scopenco https://github.com/fgimian/cwdapache/pull/1
+* SVN 1.8 Fix from @qxo https://github.com/fgimian/cwdapache/pull/4
 
 # Issues
 
