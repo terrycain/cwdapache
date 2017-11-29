@@ -12,11 +12,6 @@
 /* libcurl includes */
 #include <curl/curl.h>
 
-/* libxml includes */
-#include <libxml/parser.h>
-#include <libxml/xmlIO.h>
-#include <libxml/xmlreader.h>
-
 /* Apache Portable Runtime includes */
 #include <apr_strings.h>
 
@@ -307,21 +302,6 @@ static bool add_header(const request_rec *r, struct curl_slist **headers, const 
  * HTTP response receipt
  *=======================*/
 
-typedef struct write_data_struct write_data_t;
-
-struct write_data_struct
-{
-    const request_rec *r;
-    int status_code;
-    bool headers_done;
-    apr_array_header_t *response_text;
-    xmlTextReaderPtr xml_reader;
-    bool body_done;
-    bool body_valid;
-    bool (**xml_node_handlers)(write_data_t *write_data, const xmlChar *text);
-    void *extra;
-};
-
 static void xml_reader_error(void *arg, const char *msg, xmlParserSeverities severity __attribute__((unused)),
     xmlTextReaderLocatorPtr locator __attribute__((unused))) {
     ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, ((write_data_t *)arg)->r, "XML reader error: %s", msg);
@@ -527,6 +507,7 @@ static int crowd_request(const request_rec *r, const crowd_config *config, bool 
         if (curl_easy_setopt(curl_easy, CURLOPT_HEADERFUNCTION, write_crowd_response_header)
             || curl_easy_setopt(curl_easy, CURLOPT_WRITEHEADER, &write_data)
             || curl_easy_setopt(curl_easy, CURLOPT_WRITEFUNCTION, write_response)
+            || curl_easy_setopt(curl_easy, CURLOPT_PROXY, config->crowd_proxy)
             || curl_easy_setopt(curl_easy, CURLOPT_WRITEDATA, &write_data)
             || curl_easy_setopt(curl_easy, CURLOPT_URL, url)
 #ifdef CURLOPT_USERNAME

@@ -94,6 +94,7 @@ Apache config example
         CrowdAppPassword __APPPWD__
         CrowdURL https://__CROWDSERVER__/crowd/
         CrowdCertPath __CERTPATH__
+        CrowdProxy http://someproxy:3128
 
         CrowdAcceptSSO On
         CrowdCreateSSO On

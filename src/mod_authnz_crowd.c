@@ -154,6 +154,12 @@ static const char *set_crowd_app_password(cmd_parms *parms, void *mconfig, const
     return set_once(parms, &(config->crowd_config->crowd_app_password), w);
 }
 
+static const char *set_crowd_proxy(cmd_parms *parms, void *mconfig, const char *w)
+{
+    authnz_crowd_dir_config *config = (authnz_crowd_dir_config *) mconfig;
+    return set_once(parms, &(config->crowd_config->crowd_proxy), w);
+}
+
 static const char *add_basic_auth_conversion(const char *encoding, authnz_crowd_dir_config *config, apr_pool_t *pconf,
     apr_pool_t *ptemp)
 {
@@ -271,6 +277,8 @@ static const command_rec commands[] =
         "The name of this application, as configured in Crowd"),
     AP_INIT_TAKE1("CrowdAppPassword", set_crowd_app_password, NULL, OR_AUTHCFG,
         "The password of this application, as configured in Crowd"),
+    AP_INIT_TAKE1("CrowdProxy", set_crowd_proxy, NULL, OR_AUTHCFG,
+        "The proxy used to get to Crowd"),
     AP_INIT_ITERATE("CrowdBasicAuthEncoding", set_crowd_basic_auth_encoding, NULL, OR_AUTHCFG,
         "The list of character encodings that will be used to interpret Basic authentication credentials "
         "(default is ISO-8859-1 only"),

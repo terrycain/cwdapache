@@ -4,6 +4,11 @@
  * Header file for the Atlassian Crowd C Client
  */
 
+/* libxml includes */
+#include <libxml/parser.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlreader.h>
+
 #include "cache.h"
 
 /**
@@ -12,6 +17,7 @@
 typedef struct {
     const char *crowd_app_name;         /* Application name used to authenticate with Crowd */
     const char *crowd_app_password;     /* Application password used to authenticate with Crowd */
+    const char *crowd_proxy;            /* Proxy to connect to Crowd */
     const char *crowd_url;              /* Base URL of the Crowd server */
     const char *crowd_cert_path;        /* Path to file containing crowd certificate authority for curl */
     const char *crowd_cert_dir;         /* Path to directory containing crowd certificate authority for curl (directory must be prep'd with OpenSSL's c_rehash utility) */
@@ -23,14 +29,14 @@ typedef struct {
 /**
  * Must be called before the first use of the Crowd Client.
  */
-void crowd_init();
+void crowd_init(void);
 
 bool crowd_cache_create(apr_pool_t *pool, apr_time_t max_age, unsigned int max_entries);
 
 /**
  * Should be called after the final use of the Crowd Client.
  */
-void crowd_cleanup();
+void crowd_cleanup(void);
 
 /**
  * Creates a crowd_config, populated with default values.
@@ -104,3 +110,21 @@ typedef struct {
 
 crowd_cookie_config_t *crowd_get_cookie_config(const request_rec *r, const crowd_config *config);
 
+typedef struct write_data_struct write_data_t;
+
+struct write_data_struct
+{
+    const request_rec *r;
+    int status_code;
+    bool headers_done;
+    apr_array_header_t *response_text;
+    xmlTextReaderPtr xml_reader;
+    bool body_done;
+    bool body_valid;
+    bool (**xml_node_handlers)(write_data_t *write_data, const xmlChar *text);
+    void *extra;
+};
+
+void parse_xml(write_data_t *write_data);
+
+const char *get_forwarded_for(const request_rec *r);
